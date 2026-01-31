@@ -4,7 +4,7 @@
 
 *Developed by Nicheai - Pioneering Sustainable Computing Infrastructure*
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18180263.svg)](https://doi.org/10.5281/zenodo.18180263) [![Universal](https://img.shields.io/badge/Universal-All%20Computers-7C3AED?style=for-the-badge&logo=computer&logoColor=white)](https://github.com/nicheai/luxbin-light-language) [![Quantum Ready](https://img.shields.io/badge/Quantum-Diamond%20NV%20Centers-22C55E?style=for-the-badge&logo=diamond&logoColor=white)](https://github.com/nicheai/luxbin-light-language) [![Photonic](https://img.shields.io/badge/Photonic-Encoding-00D4AA?style=for-the-badge&logo=light&logoColor=white)](https://github.com/nicheai/luxbin-light-language) [![Mars Ready](https://img.shields.io/badge/🚀_Mars-Ready-DC2626?style=for-the-badge)](MARS_COMMUNICATION.md) [![Tested](https://img.shields.io/badge/Tested-IBM_Quantum-0066FF?style=for-the-badge&logo=ibm&logoColor=white)](https://quantum.ibm.com/) [![Nicheai](https://img.shields.io/badge/By-Nicheai-FF6B35?style=for-the-badge&logo=company&logoColor=white)](https://nicheai.com)
+[![PyPI](https://img.shields.io/pypi/v/luxbin-light-language?style=for-the-badge&logo=pypi&logoColor=white&label=PyPI)](https://pypi.org/project/luxbin-light-language/) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18180263.svg)](https://doi.org/10.5281/zenodo.18180263) [![Universal](https://img.shields.io/badge/Universal-All%20Computers-7C3AED?style=for-the-badge&logo=computer&logoColor=white)](https://github.com/nicheai/luxbin-light-language) [![Quantum Ready](https://img.shields.io/badge/Quantum-Diamond%20NV%20Centers-22C55E?style=for-the-badge&logo=diamond&logoColor=white)](https://github.com/nicheai/luxbin-light-language) [![Photonic](https://img.shields.io/badge/Photonic-Encoding-00D4AA?style=for-the-badge&logo=light&logoColor=white)](https://github.com/nicheai/luxbin-light-language) [![Mars Ready](https://img.shields.io/badge/🚀_Mars-Ready-DC2626?style=for-the-badge)](MARS_COMMUNICATION.md) [![Tested](https://img.shields.io/badge/Tested-IBM_Quantum-0066FF?style=for-the-badge&logo=ibm&logoColor=white)](https://quantum.ibm.com/) [![Nicheai](https://img.shields.io/badge/By-Nicheai-FF6B35?style=for-the-badge&logo=company&logoColor=white)](https://nicheai.com)
 
 ---
 
@@ -165,12 +165,22 @@ Words   Parts-of-Speech    Saturation     Structured Colors
 ## 🚀 Quick Start
 
 ### Installation
-```bash
-# Clone the repository
-git clone https://github.com/mermaidnicheboutique-code/luxbin-light-language.git
-cd luxbin-light-language
 
-# Install dependencies (if any)
+**Install from PyPI (recommended):**
+```bash
+pip install luxbin-light-language
+```
+
+**With optional quantum/server extras:**
+```bash
+pip install luxbin-light-language[quantum]   # adds qiskit, numpy
+pip install luxbin-light-language[all]       # all optional deps
+```
+
+**Or install from source:**
+```bash
+git clone https://github.com/nichechristie/LUXBIN_Light_Language-.git
+cd LUXBIN_Light_Language-
 pip install -r requirements.txt
 ```
 
