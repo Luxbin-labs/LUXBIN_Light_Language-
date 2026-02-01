@@ -1,390 +1,362 @@
 """
 LUXBIN Standard Library Built-in Functions
 
-Provides the standard library for the LUXBIN language including I/O,
-math, string/wavelength, array, and quantum operations.
+Provides the standard library functions for the LUXBIN language.
+All functions receive a 'vm' parameter for VM integration.
 """
 
 import math
 import random
-from typing import Any, Dict, List, Callable, Optional
+from typing import Any, Dict, Tuple, Callable, Optional
 
 
-class LuxbinBuiltins:
-    """Registry of all built-in functions available in LUXBIN programs."""
+def photon_print(value: Any, vm=None) -> None:
+    """Output to light display (console)."""
+    output = str(value) if value is not None else "nil"
+    print(output)
+    if vm:
+        vm.output.append(output)
+    return None
 
-    def __init__(self):
-        self._functions: Dict[str, Callable] = {}
-        self._register_all()
 
-    def _register_all(self):
-        """Register all built-in functions."""
-        # I/O
-        self._functions["photon_print"] = self._photon_print
-        self._functions["photon_input"] = self._photon_input
-        self._functions["photon_read"] = self._photon_read
-        self._functions["photon_write"] = self._photon_write
+def photon_input(prompt: str = "", vm=None) -> str:
+    """Read from light sensor (console input)."""
+    return input(prompt)
 
-        # Math
-        self._functions["photon_abs"] = self._photon_abs
-        self._functions["photon_sqrt"] = self._photon_sqrt
-        self._functions["photon_pow"] = self._photon_pow
-        self._functions["photon_sin"] = self._photon_sin
-        self._functions["photon_cos"] = self._photon_cos
-        self._functions["photon_tan"] = self._photon_tan
-        self._functions["photon_floor"] = self._photon_floor
-        self._functions["photon_ceil"] = self._photon_ceil
-        self._functions["photon_round"] = self._photon_round
-        self._functions["photon_min"] = self._photon_min
-        self._functions["photon_max"] = self._photon_max
 
-        # String/Wavelength
-        self._functions["photon_len"] = self._photon_len
-        self._functions["photon_concat"] = self._photon_concat
-        self._functions["photon_slice"] = self._photon_slice
-        self._functions["photon_wavelength"] = self._photon_wavelength
-        self._functions["photon_char"] = self._photon_char
-        self._functions["photon_upper"] = self._photon_upper
-        self._functions["photon_lower"] = self._photon_lower
-        self._functions["photon_to_int"] = self._photon_to_int
-        self._functions["photon_to_float"] = self._photon_to_float
-        self._functions["photon_to_string"] = self._photon_to_string
-        self._functions["photon_to_bool"] = self._photon_to_bool
-
-        # Array
-        self._functions["photon_array"] = self._photon_array
-        self._functions["photon_push"] = self._photon_push
-        self._functions["photon_pop"] = self._photon_pop
-        self._functions["photon_get"] = self._photon_get
-        self._functions["photon_set"] = self._photon_set
-        self._functions["photon_sort"] = self._photon_sort
-        self._functions["photon_reverse"] = self._photon_reverse
-
-        # Quantum
-        self._functions["quantum_superpose"] = self._quantum_superpose
-        self._functions["quantum_measure"] = self._quantum_measure
-        self._functions["quantum_entangle"] = self._quantum_entangle
-        self._functions["quantum_hadamard"] = self._quantum_hadamard
-        self._functions["quantum_cnot"] = self._quantum_cnot
-        self._functions["quantum_phase"] = self._quantum_phase
-        self._functions["quantum_teleport"] = self._quantum_teleport
-
-    def get(self, name: str) -> Optional[Callable]:
-        """Look up a built-in function by name."""
-        return self._functions.get(name)
-
-    def is_builtin(self, name: str) -> bool:
-        """Check if a name is a registered built-in."""
-        return name in self._functions
-
-    def get_all_names(self) -> List[str]:
-        """Return all registered built-in function names."""
-        return list(self._functions.keys())
-
-    def call(self, name: str, args: List[Any]) -> Any:
-        """Call a built-in function by name with arguments."""
-        func = self._functions.get(name)
-        if func is None:
-            raise NameError(f"Unknown built-in function: {name}")
-        return func(*args)
-
-    # ── I/O Functions ──
-
-    @staticmethod
-    def _photon_print(*values) -> None:
-        """Output values to light display (stdout)."""
-        output = " ".join(str(v) for v in values)
-        print(output)
-
-    @staticmethod
-    def _photon_input(prompt: str = "") -> str:
-        """Read input from light sensor (stdin)."""
-        return input(prompt)
-
-    @staticmethod
-    def _photon_read(path: str) -> str:
-        """Read file as wavelength sequence."""
-        with open(path, "r") as f:
+def photon_read(path: str, vm=None) -> str:
+    """Read file as wavelength sequence."""
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
             return f.read()
+    except FileNotFoundError:
+        return ""
 
-    @staticmethod
-    def _photon_write(path: str, data: str) -> bool:
-        """Write wavelength sequence to file."""
-        with open(path, "w") as f:
+
+def photon_write(path: str, data: Any, vm=None) -> bool:
+    """Write wavelength sequence to file."""
+    try:
+        with open(path, 'w', encoding='utf-8') as f:
             f.write(str(data))
         return True
+    except IOError:
+        return False
 
-    # ── Math Functions ──
 
-    @staticmethod
-    def _photon_abs(n) -> float:
-        return abs(n)
+# Math functions
+def photon_abs(n: float, vm=None) -> float:
+    return abs(n)
 
-    @staticmethod
-    def _photon_sqrt(n) -> float:
-        return math.sqrt(n)
 
-    @staticmethod
-    def _photon_pow(base, exp) -> float:
-        return math.pow(base, exp)
+def photon_sqrt(n: float, vm=None) -> float:
+    return math.sqrt(n)
 
-    @staticmethod
-    def _photon_sin(n) -> float:
-        return math.sin(n)
 
-    @staticmethod
-    def _photon_cos(n) -> float:
-        return math.cos(n)
+def photon_pow(base: float, exp: float, vm=None) -> float:
+    return math.pow(base, exp)
 
-    @staticmethod
-    def _photon_tan(n) -> float:
-        return math.tan(n)
 
-    @staticmethod
-    def _photon_floor(n) -> int:
-        return math.floor(n)
+def photon_sin(n: float, vm=None) -> float:
+    return math.sin(n)
 
-    @staticmethod
-    def _photon_ceil(n) -> int:
-        return math.ceil(n)
 
-    @staticmethod
-    def _photon_round(n) -> int:
-        return round(n)
+def photon_cos(n: float, vm=None) -> float:
+    return math.cos(n)
 
-    @staticmethod
-    def _photon_min(a, b):
-        return min(a, b)
 
-    @staticmethod
-    def _photon_max(a, b):
-        return max(a, b)
+def photon_tan(n: float, vm=None) -> float:
+    return math.tan(n)
 
-    # ── String/Wavelength Functions ──
 
-    @staticmethod
-    def _photon_len(seq) -> int:
-        return len(seq)
+def photon_floor(n: float, vm=None) -> int:
+    return math.floor(n)
 
-    @staticmethod
-    def _photon_concat(a, b) -> str:
-        return str(a) + str(b)
 
-    @staticmethod
-    def _photon_slice(seq, start: int, end: int):
-        return seq[int(start):int(end)]
+def photon_ceil(n: float, vm=None) -> int:
+    return math.ceil(n)
 
-    @staticmethod
-    def _photon_wavelength(char: str) -> float:
-        """Get wavelength (nm) for a character using LUXBIN encoding.
 
-        Maps visible spectrum 400-700nm across printable ASCII range.
-        """
-        if not char:
-            return 0.0
-        code = ord(char[0])
-        # Map ASCII 32-126 to 400-700nm
-        if 32 <= code <= 126:
-            return 400.0 + (code - 32) * (300.0 / 94.0)
-        return 400.0
+def photon_round(n: float, vm=None) -> int:
+    return round(n)
 
-    @staticmethod
-    def _photon_char(wavelength: float) -> str:
-        """Get character for a wavelength (nm)."""
-        if wavelength < 400.0 or wavelength > 700.0:
-            return ""
-        code = int(32 + (wavelength - 400.0) * (94.0 / 300.0))
-        code = max(32, min(126, code))
-        return chr(code)
 
-    @staticmethod
-    def _photon_upper(s: str) -> str:
-        return str(s).upper()
+def photon_min(a: float, b: float, vm=None) -> float:
+    return min(a, b)
 
-    @staticmethod
-    def _photon_lower(s: str) -> str:
-        return str(s).lower()
 
-    @staticmethod
-    def _photon_to_int(value) -> int:
-        return int(value)
+def photon_max(a: float, b: float, vm=None) -> float:
+    return max(a, b)
 
-    @staticmethod
-    def _photon_to_float(value) -> float:
-        return float(value)
 
-    @staticmethod
-    def _photon_to_string(value) -> str:
-        return str(value)
+def photon_random(vm=None) -> float:
+    return random.random()
 
-    @staticmethod
-    def _photon_to_bool(value) -> bool:
-        if isinstance(value, str):
-            return len(value) > 0
-        return bool(value)
 
-    # ── Array Functions ──
+def photon_randint(a: int, b: int, vm=None) -> int:
+    return random.randint(int(a), int(b))
 
-    @staticmethod
-    def _photon_array(size: int) -> list:
-        return [None] * int(size)
 
-    @staticmethod
-    def _photon_push(arr: list, val) -> list:
-        arr.append(val)
-        return arr
+# String/Wavelength functions
+def photon_len(seq: Any, vm=None) -> int:
+    if seq is None:
+        return 0
+    return len(seq)
 
-    @staticmethod
-    def _photon_pop(arr: list):
-        if not arr:
-            return None
+
+def photon_concat(a: str, b: str, vm=None) -> str:
+    return str(a) + str(b)
+
+
+def photon_slice(seq: Any, start: int, end: int, vm=None) -> Any:
+    return seq[int(start):int(end)]
+
+
+def photon_wavelength(char: str, vm=None) -> float:
+    from .lexer import CHAR_WAVELENGTHS
+    if char and len(char) > 0:
+        return CHAR_WAVELENGTHS.get(char[0], 540.3)
+    return 540.3
+
+
+def photon_char(wavelength: float, vm=None) -> str:
+    from .lexer import CHAR_WAVELENGTHS
+    closest = min(CHAR_WAVELENGTHS.items(), key=lambda x: abs(x[1] - wavelength))
+    return closest[0]
+
+
+def photon_upper(s: str, vm=None) -> str:
+    return str(s).upper()
+
+
+def photon_lower(s: str, vm=None) -> str:
+    return str(s).lower()
+
+
+def photon_split(s: str, sep: str = " ", vm=None) -> list:
+    return str(s).split(sep)
+
+
+def photon_join(arr: list, sep: str = "", vm=None) -> str:
+    return sep.join(str(x) for x in arr)
+
+
+def photon_strip(s: str, vm=None) -> str:
+    return str(s).strip()
+
+
+# Array functions
+def photon_array(size: int, vm=None) -> list:
+    return [None] * int(size)
+
+
+def photon_push(arr: list, val: Any, vm=None) -> list:
+    arr.append(val)
+    return arr
+
+
+def photon_pop(arr: list, vm=None) -> Any:
+    if arr:
         return arr.pop()
+    return None
 
-    @staticmethod
-    def _photon_get(arr: list, index: int):
-        return arr[int(index)]
 
-    @staticmethod
-    def _photon_set(arr: list, index: int, val) -> list:
-        arr[int(index)] = val
-        return arr
+def photon_get(arr: list, index: int, vm=None) -> Any:
+    idx = int(index)
+    if 0 <= idx < len(arr):
+        return arr[idx]
+    return None
 
-    @staticmethod
-    def _photon_sort(arr: list) -> list:
-        return sorted(arr)
 
-    @staticmethod
-    def _photon_reverse(arr: list) -> list:
-        return list(reversed(arr))
+def photon_set(arr: list, index: int, val: Any, vm=None) -> list:
+    idx = int(index)
+    if 0 <= idx < len(arr):
+        arr[idx] = val
+    return arr
 
-    # ── Quantum Functions ──
-    # These simulate quantum operations for classical hardware.
-    # On photonic hardware, these map to actual quantum gates.
 
-    @staticmethod
-    def _quantum_superpose(*states) -> dict:
-        """Create a superposition of the given states."""
-        n = len(states)
-        amplitude = 1.0 / math.sqrt(n) if n > 0 else 0.0
-        return {
-            "__type__": "qubit",
-            "states": list(states),
-            "amplitudes": [amplitude] * n,
-            "measured": False,
-        }
+def photon_sort(arr: list, vm=None) -> list:
+    return sorted(arr)
 
-    @staticmethod
-    def _quantum_measure(qubit: dict) -> int:
-        """Measure a qubit, collapsing superposition."""
-        if not isinstance(qubit, dict) or qubit.get("__type__") != "qubit":
-            raise TypeError("quantum_measure requires a qubit")
-        states = qubit["states"]
-        amplitudes = qubit["amplitudes"]
-        # Probability proportional to |amplitude|^2
-        probs = [abs(a) ** 2 for a in amplitudes]
-        total = sum(probs)
-        if total == 0:
+
+def photon_reverse(arr: list, vm=None) -> list:
+    return list(reversed(arr))
+
+
+def photon_range(start: int, end: int = None, step: int = 1, vm=None) -> list:
+    if end is None:
+        return list(range(int(start)))
+    return list(range(int(start), int(end), int(step)))
+
+
+# Type conversion functions
+def photon_to_int(value: Any, vm=None) -> int:
+    if value is None:
+        return 0
+    if isinstance(value, bool):
+        return 1 if value else 0
+    try:
+        return int(float(value))
+    except (ValueError, TypeError):
+        return 0
+
+
+def photon_to_float(value: Any, vm=None) -> float:
+    if value is None:
+        return 0.0
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return 0.0
+
+
+def photon_to_string(value: Any, vm=None) -> str:
+    if value is None:
+        return "nil"
+    return str(value)
+
+
+def photon_to_bool(value: Any, vm=None) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return len(value) > 0
+    if isinstance(value, (list, dict)):
+        return len(value) > 0
+    return bool(value)
+
+
+def photon_type(value: Any, vm=None) -> str:
+    if value is None:
+        return "nil"
+    if isinstance(value, bool):
+        return "bool"
+    if isinstance(value, int):
+        return "int"
+    if isinstance(value, float):
+        return "float"
+    if isinstance(value, str):
+        return "string"
+    if isinstance(value, list):
+        return "array"
+    return type(value).__name__
+
+
+# Quantum functions (simulated)
+def quantum_superpose(*states, vm=None):
+    from .vm import Qubit
+    qubit = Qubit()
+    n = len(states) if states else 2
+    amp = 1.0 / math.sqrt(n)
+    qubit.state = [complex(amp, 0), complex(amp, 0)]
+    return qubit
+
+
+def quantum_measure(qubit, vm=None) -> int:
+    from .vm import Qubit
+    if isinstance(qubit, Qubit):
+        if random.random() < qubit.probability_zero():
+            qubit.state = [complex(1, 0), complex(0, 0)]
             return 0
-        probs = [p / total for p in probs]
-        result = random.choices(states, weights=probs, k=1)[0]
-        qubit["measured"] = True
-        qubit["result"] = result
-        return result
+        else:
+            qubit.state = [complex(0, 0), complex(1, 0)]
+            return 1
+    return 0
 
-    @staticmethod
-    def _quantum_entangle(q1: dict, q2: dict) -> None:
-        """Entangle two qubits."""
-        if not isinstance(q1, dict) or not isinstance(q2, dict):
-            raise TypeError("quantum_entangle requires two qubits")
-        # Mark entanglement (simulation)
-        entangle_id = id(q1) ^ id(q2)
-        q1["entangled_with"] = entangle_id
-        q2["entangled_with"] = entangle_id
 
-    @staticmethod
-    def _quantum_hadamard(q: dict) -> dict:
-        """Apply Hadamard gate to a qubit."""
-        if not isinstance(q, dict) or q.get("__type__") != "qubit":
-            raise TypeError("quantum_hadamard requires a qubit")
-        inv_sqrt2 = 1.0 / math.sqrt(2)
-        return {
-            "__type__": "qubit",
-            "states": [0, 1],
-            "amplitudes": [inv_sqrt2, inv_sqrt2],
-            "measured": False,
-        }
+def quantum_entangle(q1, q2, vm=None) -> None:
+    from .vm import Qubit
+    if isinstance(q1, Qubit) and isinstance(q2, Qubit):
+        q1.entangled_with = q2
+        q2.entangled_with = q1
+    return None
 
-    @staticmethod
-    def _quantum_cnot(control: dict, target: dict) -> None:
-        """Apply CNOT gate (simulated)."""
-        pass
 
-    @staticmethod
-    def _quantum_phase(q: dict, angle: float) -> dict:
-        """Apply phase rotation to a qubit."""
-        if not isinstance(q, dict) or q.get("__type__") != "qubit":
-            raise TypeError("quantum_phase requires a qubit")
-        result = dict(q)
-        result["amplitudes"] = [
-            a * complex(math.cos(angle), math.sin(angle))
-            for a in q["amplitudes"]
-        ]
-        return result
+def quantum_hadamard(qubit, vm=None):
+    from .vm import Qubit
+    if isinstance(qubit, Qubit):
+        a, b = qubit.state
+        sqrt2 = math.sqrt(2)
+        qubit.state = [(a + b) / sqrt2, (a - b) / sqrt2]
+    return qubit
 
-    @staticmethod
-    def _quantum_teleport(q: dict, dest) -> bool:
-        """Quantum teleportation (simulated)."""
-        if not isinstance(q, dict) or q.get("__type__") != "qubit":
-            return False
+
+def quantum_cnot(control, target, vm=None) -> None:
+    from .vm import Qubit
+    if isinstance(control, Qubit) and isinstance(target, Qubit):
+        if abs(control.state[1]) > abs(control.state[0]):
+            target.state = [target.state[1], target.state[0]]
+    return None
+
+
+def quantum_phase(qubit, angle: float, vm=None):
+    from .vm import Qubit
+    if isinstance(qubit, Qubit):
+        phase = complex(math.cos(angle), math.sin(angle))
+        qubit.state[1] *= phase
+    return qubit
+
+
+def quantum_teleport(qubit, destination, vm=None) -> bool:
+    from .vm import Qubit
+    if isinstance(qubit, Qubit) and isinstance(destination, Qubit):
+        destination.state = qubit.state.copy()
+        qubit.state = [complex(1, 0), complex(0, 0)]
         return True
+    return False
 
 
-# Module-level BUILTINS dict expected by the VM: {name: (callable, num_args)}
-_instance = LuxbinBuiltins()
-BUILTINS = {
-    # I/O
-    "photon_print": (_instance._photon_print, -1),
-    "photon_input": (_instance._photon_input, 1),
-    "photon_read": (_instance._photon_read, 1),
-    "photon_write": (_instance._photon_write, 2),
-    # Math
-    "photon_abs": (_instance._photon_abs, 1),
-    "photon_sqrt": (_instance._photon_sqrt, 1),
-    "photon_pow": (_instance._photon_pow, 2),
-    "photon_sin": (_instance._photon_sin, 1),
-    "photon_cos": (_instance._photon_cos, 1),
-    "photon_tan": (_instance._photon_tan, 1),
-    "photon_floor": (_instance._photon_floor, 1),
-    "photon_ceil": (_instance._photon_ceil, 1),
-    "photon_round": (_instance._photon_round, 1),
-    "photon_min": (_instance._photon_min, 2),
-    "photon_max": (_instance._photon_max, 2),
-    # String/Wavelength
-    "photon_len": (_instance._photon_len, 1),
-    "photon_concat": (_instance._photon_concat, 2),
-    "photon_slice": (_instance._photon_slice, 3),
-    "photon_wavelength": (_instance._photon_wavelength, 1),
-    "photon_char": (_instance._photon_char, 1),
-    "photon_upper": (_instance._photon_upper, 1),
-    "photon_lower": (_instance._photon_lower, 1),
-    "photon_to_int": (_instance._photon_to_int, 1),
-    "photon_to_float": (_instance._photon_to_float, 1),
-    "photon_to_string": (_instance._photon_to_string, 1),
-    "photon_to_bool": (_instance._photon_to_bool, 1),
-    # Array
-    "photon_array": (_instance._photon_array, 1),
-    "photon_push": (_instance._photon_push, 2),
-    "photon_pop": (_instance._photon_pop, 1),
-    "photon_get": (_instance._photon_get, 2),
-    "photon_set": (_instance._photon_set, 3),
-    "photon_sort": (_instance._photon_sort, 1),
-    "photon_reverse": (_instance._photon_reverse, 1),
-    # Quantum
-    "quantum_superpose": (_instance._quantum_superpose, -1),
-    "quantum_measure": (_instance._quantum_measure, 1),
-    "quantum_entangle": (_instance._quantum_entangle, 2),
-    "quantum_hadamard": (_instance._quantum_hadamard, 1),
-    "quantum_cnot": (_instance._quantum_cnot, 2),
-    "quantum_phase": (_instance._quantum_phase, 2),
-    "quantum_teleport": (_instance._quantum_teleport, 2),
+def __import__(module: str, vm=None):
+    return {}
+
+
+# Registry: name -> (function, num_args), -1 means variable args
+BUILTINS: Dict[str, Tuple[Callable, int]] = {
+    'photon_print': (photon_print, 1),
+    'photon_input': (photon_input, 1),
+    'photon_read': (photon_read, 1),
+    'photon_write': (photon_write, 2),
+    'photon_abs': (photon_abs, 1),
+    'photon_sqrt': (photon_sqrt, 1),
+    'photon_pow': (photon_pow, 2),
+    'photon_sin': (photon_sin, 1),
+    'photon_cos': (photon_cos, 1),
+    'photon_tan': (photon_tan, 1),
+    'photon_floor': (photon_floor, 1),
+    'photon_ceil': (photon_ceil, 1),
+    'photon_round': (photon_round, 1),
+    'photon_min': (photon_min, 2),
+    'photon_max': (photon_max, 2),
+    'photon_random': (photon_random, 0),
+    'photon_randint': (photon_randint, 2),
+    'photon_len': (photon_len, 1),
+    'photon_concat': (photon_concat, 2),
+    'photon_slice': (photon_slice, 3),
+    'photon_wavelength': (photon_wavelength, 1),
+    'photon_char': (photon_char, 1),
+    'photon_upper': (photon_upper, 1),
+    'photon_lower': (photon_lower, 1),
+    'photon_split': (photon_split, 2),
+    'photon_join': (photon_join, 2),
+    'photon_strip': (photon_strip, 1),
+    'photon_array': (photon_array, 1),
+    'photon_push': (photon_push, 2),
+    'photon_pop': (photon_pop, 1),
+    'photon_get': (photon_get, 2),
+    'photon_set': (photon_set, 3),
+    'photon_sort': (photon_sort, 1),
+    'photon_reverse': (photon_reverse, 1),
+    'photon_range': (photon_range, -1),
+    'photon_to_int': (photon_to_int, 1),
+    'photon_to_float': (photon_to_float, 1),
+    'photon_to_string': (photon_to_string, 1),
+    'photon_to_bool': (photon_to_bool, 1),
+    'photon_type': (photon_type, 1),
+    'quantum_superpose': (quantum_superpose, -1),
+    'quantum_measure': (quantum_measure, 1),
+    'quantum_entangle': (quantum_entangle, 2),
+    'quantum_hadamard': (quantum_hadamard, 1),
+    'quantum_cnot': (quantum_cnot, 2),
+    'quantum_phase': (quantum_phase, 2),
+    'quantum_teleport': (quantum_teleport, 2),
+    '__import__': (__import__, 1),
 }
